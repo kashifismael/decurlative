@@ -22,6 +22,17 @@ func main() {
 		panic(err.Error())
 	}
 
+	errors := ValidateInput(httpConfig)
+
+	if len(errors) > 0 {
+
+		for _, error := range errors {
+			fmt.Println(error.Error())
+		}
+
+		panic("Invalid Inputs")
+	}
+
 	curlInput := Converter(httpConfig)
 
 	Curl(curlInput)
