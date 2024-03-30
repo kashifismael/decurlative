@@ -8,7 +8,13 @@ import (
 
 func Converter(httpConfig HttpRequestConfig) CurlInput {
 
-	httpMethod := strings.ToUpper(httpConfig.Method)
+	var httpMethod string
+
+	if httpConfig.Method == "" {
+		httpMethod = "GET"
+	} else {
+		httpMethod = strings.ToUpper(httpConfig.Method)
+	}
 
 	queryParams := generateQueryParamsString(httpConfig)
 

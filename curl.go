@@ -5,10 +5,15 @@ import (
 	"os/exec"
 )
 
-func Curl(input CurlInput) {
+func Curl(input CurlInput, cliFlags CommandLineFlags) {
 
 	httpMethod := input.HttpMethod
 	url := input.Url
+
+	if cliFlags.DebugMode {
+		fmt.Printf("http method: %v \n", httpMethod)
+		fmt.Printf("url: %v \n", url)
+	}
 
 	cmd := exec.Command("curl", "-X", httpMethod, url)
 
