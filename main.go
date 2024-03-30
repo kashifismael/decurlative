@@ -9,6 +9,10 @@ import (
 
 func main() {
 
+	cliArgs := os.Args[1:]
+
+	cliFlags := ProcessFlags(cliArgs)
+
 	inputAsBytes, err := io.ReadAll(os.Stdin)
 
 	if err != nil {
@@ -35,6 +39,6 @@ func main() {
 
 	curlInput := Converter(httpConfig)
 
-	Curl(curlInput)
+	Curl(curlInput, cliFlags)
 
 }

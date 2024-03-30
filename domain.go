@@ -11,3 +11,7 @@ type CurlInput struct {
 	Url        string
 	HttpMethod string
 }
+
+type CommandLineFlags struct {
+	DebugMode bool
+}
