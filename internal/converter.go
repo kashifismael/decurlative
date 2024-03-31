@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"encoding/base64"
 	"fmt"
 	"net/url"
 	"strings"
@@ -22,9 +23,30 @@ func Converter(httpConfig HttpRequestConfig) CurlInput {
 
 	httpUrl := urlBase + queryParams
 
+	var basicAuthHeader string
+
+	if len(httpConfig.BasicAuth.Username) > 0 {
+		basicAuthHeader = generateBasicAuthHeader(httpConfig.BasicAuth)
+	} else {
+		basicAuthHeader = ""
+	}
+
+	var headers map[string]string
+
+	if httpConfig.Headers == nil {
+		headers = make(map[string]string)
+	} else {
+		headers = httpConfig.Headers
+	}
+
+	if basicAuthHeader != "" {
+		headers["Authorization"] = basicAuthHeader
+	}
+
 	return CurlInput{
 		Url:        httpUrl,
 		HttpMethod: httpMethod,
+		Headers:    headers,
 	}
 
 }
@@ -89,4 +111,16 @@ func generateQueryParamsString(queryParams map[string][]string) string {
 	}
 
 	return fmt.Sprintf("?%v", strings.Join(paramList, "&"))
+}
+
+func generateBasicAuthHeader(basicAuth BasicAuth) string {
+	rawCredentials := fmt.Sprintf("%v:%v", basicAuth.Username, basicAuth.Password)
+
+	data := []byte(rawCredentials)
+
+	dst := make([]byte, base64.StdEncoding.EncodedLen(len(data)))
+
+	base64.StdEncoding.Encode(dst, data)
+
+	return fmt.Sprintf("Basic %v", string(dst))
 }

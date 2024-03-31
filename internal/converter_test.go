@@ -46,3 +46,19 @@ func TestGenerateQueryParams_EmptyParams(t *testing.T) {
 	}
 
 }
+
+func TestGenerateBasicAuthHeaderValue(t *testing.T) {
+	credentials := BasicAuth{
+		Username: "foo",
+		Password: "bar",
+	}
+
+	actual := generateBasicAuthHeader(credentials)
+
+	expected := "Basic Zm9vOmJhcg=="
+
+	if actual != expected {
+		t.Fatalf("Expected: %v\nActual: %v\n", expected, actual)
+	}
+
+}

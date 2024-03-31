@@ -10,12 +10,18 @@ func Curl(input CurlInput, cliFlags CommandLineFlags) {
 	httpMethod := input.HttpMethod
 	url := input.Url
 
-	if cliFlags.DebugMode {
-		fmt.Printf("http method: %v \n", httpMethod)
-		fmt.Printf("url: %v \n", url)
+	curlArgs := []string{"-X", httpMethod, url}
+
+	for k, v := range input.Headers {
+		curlArgs = append(curlArgs, "-H")
+		curlArgs = append(curlArgs, fmt.Sprintf("%v: %v", k, v))
 	}
 
-	cmd := exec.Command("curl", "-X", httpMethod, url)
+	if cliFlags.DebugMode {
+		fmt.Printf("curl args: %v \n", curlArgs)
+	}
+
+	cmd := exec.Command("curl", curlArgs...)
 
 	out, err := cmd.Output()
 
