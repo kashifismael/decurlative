@@ -2,6 +2,7 @@ package internal
 
 import (
 	"fmt"
+	"net/url"
 	"strings"
 )
 
@@ -28,23 +29,43 @@ func Converter(httpConfig HttpRequestConfig) CurlInput {
 
 }
 
-func substitutePathParams(url string, pathParams map[string]string) string {
+func substitutePathParams(urlInput string, pathParams map[string]string) string {
 
-	var urlPointer = new(string)
-	*urlPointer = url
-
-	for k, v := range pathParams {
-
-		urlValue := fmt.Sprint(*urlPointer)
-
-		placeholder := fmt.Sprintf(":%v", k)
-
-		*urlPointer = strings.ReplaceAll(urlValue, placeholder, v)
+	u, err := url.Parse(urlInput)
+	if err != nil {
+		panic(err.Error())
 	}
 
-	urlValue := *urlPointer
+	var preSubstitutePathParts []string = strings.Split(u.Path, "/")
 
-	return fmt.Sprint(urlValue)
+	var postSubstitutePathParts []string = make([]string, 0)
+
+	for _, pathPart := range preSubstitutePathParts {
+
+		finalPathPart := substituteOrDefaultPathPart(pathPart, pathParams)
+		postSubstitutePathParts = append(postSubstitutePathParts, finalPathPart)
+
+	}
+
+	finalPathParts := strings.Join(postSubstitutePathParts, "/")
+
+	return fmt.Sprintf("%v://%v%v", u.Scheme, u.Host, finalPathParts)
+}
+
+func substituteOrDefaultPathPart(pathPart string, pathParams map[string]string) string {
+
+	for placeholderWithoutPrefix, value := range pathParams {
+
+		placeholder := ":" + placeholderWithoutPrefix
+
+		if pathPart == placeholder {
+			return value
+		}
+
+	}
+
+	return pathPart
+
 }
 
 func generateQueryParamsString(queryParams map[string][]string) string {
