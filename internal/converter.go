@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"bytes"
 	"fmt"
 	"strings"
 )
@@ -16,7 +15,7 @@ func Converter(httpConfig HttpRequestConfig) CurlInput {
 		httpMethod = strings.ToUpper(httpConfig.Method)
 	}
 
-	queryParams := generateQueryParamsString(httpConfig)
+	queryParams := generateQueryParamsString(httpConfig.QueryParams)
 
 	urlBase := substitutePathParams(httpConfig.Url, httpConfig.PathParams)
 
@@ -48,22 +47,25 @@ func substitutePathParams(url string, pathParams map[string]string) string {
 	return fmt.Sprint(urlValue)
 }
 
-func generateQueryParamsString(httpConfig HttpRequestConfig) string {
-	var queryParamsBytes bytes.Buffer
+func generateQueryParamsString(queryParams map[string][]string) string {
 
-	queryParamsBytes.WriteString("?")
+	if len(queryParams) == 0 {
+		return ""
+	}
 
-	for k, v := range httpConfig.QueryParams {
+	var paramList []string
+
+	for k, v := range queryParams {
 
 		for _, value := range v {
 
-			paramString := fmt.Sprintf("%v=%v&", k, value)
+			paramString := fmt.Sprintf("%v=%v", k, value)
 
-			queryParamsBytes.WriteString(paramString)
+			paramList = append(paramList, paramString)
 
 		}
 
 	}
 
-	return queryParamsBytes.String()
+	return fmt.Sprintf("?%v", strings.Join(paramList, "&"))
 }
