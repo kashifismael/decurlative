@@ -1,4 +1,4 @@
-package main
+package internal
 
 type HttpRequestConfig struct {
 	Url         string              `json:"url"`

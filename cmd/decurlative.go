@@ -1,6 +1,7 @@
 package main
 
 import (
+	"decurlative/internal"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -11,7 +12,7 @@ func main() {
 
 	cliArgs := os.Args[1:]
 
-	cliFlags := ProcessFlags(cliArgs)
+	cliFlags := internal.ProcessFlags(cliArgs)
 
 	inputAsBytes, err := io.ReadAll(os.Stdin)
 
@@ -19,14 +20,14 @@ func main() {
 		panic(err.Error())
 	}
 
-	httpConfig := HttpRequestConfig{}
+	httpConfig := internal.HttpRequestConfig{}
 
 	if err := json.Unmarshal(inputAsBytes, &httpConfig); err != nil {
 		fmt.Println("error parsing json")
 		panic(err.Error())
 	}
 
-	errors := ValidateInput(httpConfig)
+	errors := internal.ValidateInput(httpConfig)
 
 	if len(errors) > 0 {
 
@@ -37,8 +38,8 @@ func main() {
 		panic("Invalid Inputs")
 	}
 
-	curlInput := Converter(httpConfig)
+	curlInput := internal.Converter(httpConfig)
 
-	Curl(curlInput, cliFlags)
+	internal.Curl(curlInput, cliFlags)
 
 }
