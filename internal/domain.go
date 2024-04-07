@@ -7,12 +7,14 @@ type HttpRequestConfig struct {
 	PathParams  map[string]string   `json:"pathParams"`
 	Headers     map[string]string   `json:"headers"`
 	BasicAuth   BasicAuth           `json:"basicAuth"`
+	PayloadPath string              `json:"payloadPath"`
 }
 
 type CurlInput struct {
 	Url        string
 	HttpMethod string
 	Headers    map[string]string
+	Payload    string
 }
 
 type CommandLineFlags struct {

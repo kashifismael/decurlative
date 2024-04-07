@@ -3,6 +3,7 @@ package internal
 import (
 	"encoding/base64"
 	"fmt"
+	"os"
 	"net/url"
 	"strings"
 )
@@ -43,10 +44,26 @@ func Converter(httpConfig HttpRequestConfig) CurlInput {
 		headers["Authorization"] = basicAuthHeader
 	}
 
+	var payload string
+	if httpConfig.PayloadPath != "" {
+
+		fileBytes, err := os.ReadFile(httpConfig.PayloadPath)
+
+		if err != nil {
+			panic(err.Error())
+		}
+
+		payload = string(fileBytes)
+
+	} else {
+		payload = ""
+	}
+
 	return CurlInput{
 		Url:        httpUrl,
 		HttpMethod: httpMethod,
 		Headers:    headers,
+		Payload:    payload,
 	}
 
 }

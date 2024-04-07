@@ -17,6 +17,11 @@ func Curl(input CurlInput, cliFlags CommandLineFlags) {
 		curlArgs = append(curlArgs, fmt.Sprintf("%v: %v", k, v))
 	}
 
+	if input.Payload != "" {
+		curlArgs = append(curlArgs, "-d")
+		curlArgs = append(curlArgs, fmt.Sprintf("%v", input.Payload))
+	}
+
 	if cliFlags.DebugMode {
 		fmt.Printf("curl args: %v \n", curlArgs)
 	}
@@ -25,10 +30,11 @@ func Curl(input CurlInput, cliFlags CommandLineFlags) {
 
 	out, err := cmd.Output()
 
+	fmt.Println(string(out))
+
 	if err != nil {
 		panic(err.Error())
 	}
 
-	fmt.Println(string(out))
 
 }
